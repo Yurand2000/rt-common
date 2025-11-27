@@ -1,0 +1,9 @@
+[package]
+name = "rt-common"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+num = "0.4.3"
+ordered-float = "5.1.0"
+serde = { version = "1.0.228", features = ["serde_derive"] }
