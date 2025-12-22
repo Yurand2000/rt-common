@@ -1,6 +1,13 @@
-# RT-Common
+# EVA-rt-Common
 
 **Common** structs, traits and functions used by **Real-Time** tools. Just a library.
+
+Initially part of [**EVA-rt-Engine**](https://github.com/Yurand2000/EVA-rt-Engine), now a separate library for other real-time applications.
+
+## 🛠️ Future Work
+
+- [ ] Documentation
+- [ ] [📦 crates.io](crate.io) release
 
 ## 📄 License
 
@@ -13,4 +20,4 @@ This software was developed by:
 
 ---
 
-**RT-Common**
+**EVA-rt-Common**
