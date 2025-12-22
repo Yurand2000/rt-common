@@ -1,3 +1,19 @@
+//! Time and Time² structs.
+//! 
+//! The **Time** and **Time²** (Time2) structs are **f64** wrappers that
+//! describe time items with nanosecond precision. The structs were built to
+//! better write expressions and formulas, and catch subtle typing errors when
+//! writing the formulas from academic papers into code.
+//! 
+//! The general idea is to overload the standard unary and binary operators of
+//! *f64* to better represent what a combination of different unit object is. As
+//! an example, sum of `Time`s is still a `Time`, while division of `Time`s is a
+//! scalar, and product of `Time`s is a `Time²`.
+//! 
+//! Both struct additionally implement `Eq` and `Ord` for easier comparisons.
+//! They use the [ordered-float](https://crates.io/crates/ordered-float/)
+//! crate's functions for comparisons.
+
 pub mod prelude {
     pub use super::{
         Time,

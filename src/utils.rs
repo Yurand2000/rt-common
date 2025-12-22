@@ -1,3 +1,8 @@
+//! General utilities.
+//! 
+//! Given that tasksets are described as slices of `RTTask`s, this module
+//! provides utility functions to compute properties of the given tasksets.
+
 use crate::prelude::*;
 
 pub mod prelude {
@@ -6,6 +11,7 @@ pub mod prelude {
     };
 }
 
+/// Utility functions on tasksets.
 pub struct RTUtils;
 
 impl RTUtils {

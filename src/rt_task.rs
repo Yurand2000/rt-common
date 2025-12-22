@@ -1,3 +1,10 @@
+//! RTTask struct.
+//! 
+//! This module defines the `RTTask` struct, which describes a real-time task
+//! following the standard Liu-Layland model. Real-Time tasks are here
+//! characterized by **Worst Case Execution Time** (WCET), **Relative Deadline**
+//! and **(Minimum Inter-arrival) Period**.
+
 use crate::prelude::*;
 
 pub mod prelude {
@@ -9,8 +16,11 @@ pub mod prelude {
 #[derive(Debug, Clone)]
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct RTTask {
+    /// Worst Case Execution Time
     pub wcet: Time,
+    /// Relative Deadline
     pub deadline: Time,
+    /// (Minimum Inter-arrival) Period
     pub period: Time,
 }
 
@@ -23,25 +33,27 @@ impl RTTask {
         }
     }
 
-    /// wcet / period
+    /// WCET / Period
     pub fn utilization(&self) -> f64 {
         self.wcet.value_ns / self.period.value_ns
     }
 
-    /// wcet / deadline
+    /// WCET / Deadline
     pub fn density(&self) -> f64 {
         self.wcet.value_ns / self.deadline.value_ns
     }
 
-    /// deadline - wcet
+    /// Deadline - WCET
     pub fn laxity(&self) -> Time {
         self.deadline - self.wcet
     }
 
+    /// Deadline == Period
     pub fn has_implicit_deadline(&self) -> bool {
         self.deadline == self.period
     }
 
+    /// Deadline <= Period
     pub fn has_constrained_deadline(&self) -> bool {
         self.deadline <= self.period
     }

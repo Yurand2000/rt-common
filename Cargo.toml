@@ -2,6 +2,11 @@
 name = "eva-rt-common"
 version = "0.1.0"
 edition = "2024"
+license-file = "LICENSE"
+description = "Structs, traits and functions used to develop real-time analysis tools."
+homepage = "https://github.com/Yurand2000/eva-rt-common"
+repository = "https://github.com/Yurand2000/eva-rt-common"
+readme = "README.md"
 
 [dependencies]
 num = "0.4.3"
