@@ -6,8 +6,8 @@ Initially part of [**EVA-rt-Engine**](https://github.com/Yurand2000/EVA-rt-Engin
 
 ## 🛠️ Future Work
 
-- [ ] Documentation
-- [ ] [📦 crates.io](crate.io) release
+- [x] Documentation
+- [x] [📦 crates.io](crate.io) release
 
 ## 📄 License
 
