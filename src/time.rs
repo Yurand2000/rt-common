@@ -193,7 +193,7 @@ impl std::fmt::Display for Time {
         if nanos % Time::SECS_TO_NANO as u64 == 0 {
             write!(f, "{}s", nanos / Time::SECS_TO_NANO as u64)
         } else if nanos % Time::MILLI_TO_NANO as u64 == 0 {
-            write!(f, "{}ms", nanos / Time:: MILLI_TO_NANO as u64)
+            write!(f, "{}ms", nanos / Time::MILLI_TO_NANO as u64)
         } else if nanos % Time::MICRO_TO_NANO as u64 == 0 {
             write!(f, "{}us", nanos / Time::MICRO_TO_NANO as u64)
         } else {

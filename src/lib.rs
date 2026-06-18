@@ -35,10 +35,10 @@ pub mod literals {
         macro_rules! s { ($value:literal) => { $crate::time::Time::secs($value as f64) } }
 
         #[macro_export]
-        macro_rules! ms { ($value:literal) => { $crate::time::Time::micros($value as f64) } }
+        macro_rules! ms { ($value:literal) => { $crate::time::Time::millis($value as f64) } }
 
         #[macro_export]
-        macro_rules! us { ($value:literal) => { $crate::time::Time::millis($value as f64) } }
+        macro_rules! us { ($value:literal) => { $crate::time::Time::micros($value as f64) } }
 
         #[macro_export]
         macro_rules! ns { ($value:literal) => { $crate::time::Time::nanos($value as f64) } }
