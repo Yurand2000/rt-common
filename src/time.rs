@@ -1,15 +1,15 @@
 //! Time and Time² structs.
-//! 
+//!
 //! The **Time** and **Time²** (Time2) structs are **f64** wrappers that
 //! describe time items with nanosecond precision. The structs were built to
 //! better write expressions and formulas, and catch subtle typing errors when
 //! writing the formulas from academic papers into code.
-//! 
+//!
 //! The general idea is to overload the standard unary and binary operators of
 //! *f64* to better represent what a combination of different unit object is. As
 //! an example, sum of `Time`s is still a `Time`, while division of `Time`s is a
 //! scalar, and product of `Time`s is a `Time²`.
-//! 
+//!
 //! Both struct additionally implement `Eq` and `Ord` for easier comparisons.
 //! They use the [ordered-float](https://crates.io/crates/ordered-float/)
 //! crate's functions for comparisons.
@@ -189,17 +189,69 @@ impl std::iter::Sum for Time {
 
 impl std::fmt::Display for Time {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let milli = self.value_ns / Self::MILLI_TO_NANO;
-        if milli >= 1.0 {
-            return write!(f, "{milli:.3}ms");
+        let nanos = self.value_ns.floor() as u64;
+        if nanos % Time::SECS_TO_NANO as u64 == 0 {
+            write!(f, "{}s", nanos / Time::SECS_TO_NANO as u64)
+        } else if nanos % Time::MILLI_TO_NANO as u64 == 0 {
+            write!(f, "{}ms", nanos / Time:: MILLI_TO_NANO as u64)
+        } else if nanos % Time::MICRO_TO_NANO as u64 == 0 {
+            write!(f, "{}us", nanos / Time::MICRO_TO_NANO as u64)
+        } else {
+            write!(f, "{}ns", nanos)
         }
+    }
+}
 
-        let micro = self.value_ns / Self::MICRO_TO_NANO;
-        if micro >= 1.0 {
-            return write!(f, "{micro:.3}us");
+#[derive(Debug)]
+pub enum TimeParseError {
+    NumberParseError(std::num::ParseFloatError),
+    UnitParseError(String),
+    FormatError(),
+}
+
+impl std::fmt::Display for TimeParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use TimeParseError::*;
+
+        match self {
+            NumberParseError(err) => write!(f, "Invalid Number: {err}"),
+            UnitParseError(unit) => write!(f, "Invalid Time Unit: {unit}"),
+            FormatError() => write!(f, "Invalid Format"),
         }
+    }
+}
 
-        write!(f, "{:.3}ns", self.value_ns)
+impl std::error::Error for TimeParseError { }
+
+impl std::str::FromStr for Time {
+    type Err = TimeParseError;
+
+    fn from_str(str: &str) -> Result<Self, Self::Err> {
+        let Some(split_idx) =
+            str.char_indices().find_map(|(index, ch)| {
+                if !(ch.is_ascii_digit() || ch == '+' || ch == '-' || ch == '.' || ch == 'e' || ch == 'E') {
+                    Some(index)
+                } else {
+                    None
+                }
+            }) else {
+                return Err(TimeParseError::FormatError())
+            };
+
+        let (num, unit) = str.split_at(split_idx);
+
+        let unit = match unit {
+            "s" => Time::SECS_TO_NANO,
+            "ms" => Time::MILLI_TO_NANO,
+            "us" => Time::MICRO_TO_NANO,
+            "ns" => 1.0,
+            u => { return Err(TimeParseError::UnitParseError(u.to_owned())) }
+        };
+
+        let num: f64 = num.parse()
+            .map_err(|err| TimeParseError::NumberParseError(err))?;
+
+        Ok(Time::nanos(num * unit))
     }
 }
 
@@ -208,7 +260,7 @@ impl serde::Serialize for Time {
     where
         S: serde::Serializer,
     {
-        format!("{} ns", self.value_ns).serialize(serializer)
+        format!("{}", self).serialize(serializer)
     }
 }
 
@@ -217,29 +269,9 @@ impl<'de> serde::Deserialize<'de> for Time {
     where
         D: serde::Deserializer<'de>,
     {
-        let time_string = String::deserialize(deserializer)?;
-
-        let pieces: Vec<_> = time_string.trim().split_whitespace().collect();
-        if pieces.len() == 1 {
-            let time: f64 = pieces[0].parse()
-                .map_err(|err| serde::de::Error::custom(format!("Invalid time: {err}")))?;
-
-            Ok(Time { value_ns: time })
-        } else if pieces.len() == 2 {
-            let time: f64 = pieces[0].parse()
-                .map_err(|err| serde::de::Error::custom(format!("Invalid time: {err}")))?;
-            let unit = match pieces[1] {
-                "s" => Time::SECS_TO_NANO,
-                "ms" => Time::MILLI_TO_NANO,
-                "us" => Time::MICRO_TO_NANO,
-                "ns" => 1.0,
-                u => { return Err(serde::de::Error::custom(format!("Unknown time unit: {u}"))); }
-            };
-
-            Ok(Time::nanos(time * unit))
-        } else {
-            return Err(serde::de::Error::custom("Parsing error, unknown format"));
-        }
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(serde::de::Error::custom)
     }
 }
 
