@@ -14,6 +14,8 @@
 //! They use the [ordered-float](https://crates.io/crates/ordered-float/)
 //! crate's functions for comparisons.
 
+use num::Signed;
+
 pub mod prelude {
     pub use super::{
         Time,
@@ -46,6 +48,10 @@ impl Time {
 
     pub fn one() -> Self {
         Self { value_ns: 1.0 }
+    }
+
+    pub fn infinity() -> Self {
+        Self { value_ns: f64::INFINITY }
     }
 
     pub fn nanos(time_ns: f64) -> Self {
@@ -189,13 +195,13 @@ impl std::iter::Sum for Time {
 
 impl std::fmt::Display for Time {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let nanos = self.value_ns.floor() as u64;
-        if nanos % Time::SECS_TO_NANO as u64 == 0 {
-            write!(f, "{}s", nanos / Time::SECS_TO_NANO as u64)
-        } else if nanos % Time::MILLI_TO_NANO as u64 == 0 {
-            write!(f, "{}ms", nanos / Time::MILLI_TO_NANO as u64)
-        } else if nanos % Time::MICRO_TO_NANO as u64 == 0 {
-            write!(f, "{}us", nanos / Time::MICRO_TO_NANO as u64)
+        let nanos = self.value_ns.floor() as i64;
+        if nanos % Time::SECS_TO_NANO as i64 == 0 {
+            write!(f, "{}s", nanos / Time::SECS_TO_NANO as i64)
+        } else if nanos % Time::MILLI_TO_NANO as i64 == 0 {
+            write!(f, "{}ms", nanos / Time::MILLI_TO_NANO as i64)
+        } else if nanos % Time::MICRO_TO_NANO as i64 == 0 {
+            write!(f, "{}us", nanos / Time::MICRO_TO_NANO as i64)
         } else {
             write!(f, "{}ns", nanos)
         }
