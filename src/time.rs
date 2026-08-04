@@ -14,8 +14,6 @@
 //! They use the [ordered-float](https://crates.io/crates/ordered-float/)
 //! crate's functions for comparisons.
 
-use num::Signed;
-
 pub mod prelude {
     pub use super::{
         Time,
